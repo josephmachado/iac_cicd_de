@@ -67,8 +67,7 @@ resource "aws_iam_role_policy" "github_actions" {
         "ec2:*",
         "s3:*",
         "iam:*",
-        "ssm:SendCommand",
-        "ssm:GetCommandInvocation"
+        "ssm:*"
       ]
       Resource = "*"
     }]
