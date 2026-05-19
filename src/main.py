@@ -30,4 +30,3 @@ def write_to_s3():
 while True:
     write_to_s3()
     time.sleep(60)
-
