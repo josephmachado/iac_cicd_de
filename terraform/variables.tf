@@ -11,6 +11,7 @@ variable "environment" {
 
 variable "input_bucket" {
   type = string
+  default = "input-bucket"
 }
 
 variable "instance_type" {
