@@ -87,3 +87,27 @@ get the local file aws_role_arn and ^
 
 
 check ci 1 
+
+## Destroy all 
+
+
+```bash
+# set once
+USERNAME=josephmachado
+
+# destroy sandbox
+terraform -chdir=terraform init -backend-config="key=sandbox/$USERNAME/terraform.tfstate"
+terraform -chdir=terraform destroy -auto-approve -var-file="envs/sandbox.tfvars" -var="environment=sandbox-$USERNAME"
+
+# destroy dev
+terraform -chdir=terraform init -backend-config="key=dev/terraform.tfstate"
+terraform -chdir=terraform destroy -auto-approve -var-file="envs/dev.tfvars"
+
+# destroy prod
+terraform -chdir=terraform init -backend-config="key=prod/terraform.tfstate"
+terraform -chdir=terraform destroy -auto-approve -var-file="envs/prod.tfvars"
+
+# destroy bootstrap last
+terraform -chdir=terraform/bootstrap init
+terraform -chdir=terraform/bootstrap destroy -auto-approve
+```

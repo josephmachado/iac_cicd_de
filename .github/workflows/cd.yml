@@ -39,6 +39,21 @@ jobs:
             -auto-approve \
             -var-file="envs/dev.tfvars"
 
+      - name: Get instance ID
+        id: tf_output
+        run: |
+          INSTANCE_ID=$(terraform -chdir=terraform output -raw instance_id)
+          echo "instance_id=$INSTANCE_ID" >> $GITHUB_OUTPUT
+
+      - name: Sync code to EC2
+        run: |
+          aws ssm send-command \
+            --instance-ids ${{ steps.tf_output.outputs.instance_id }} \
+            --document-name "AWS-RunShellScript" \
+            --parameters '{"commands":[
+              "cd /home/admin && git clone https://github.com/your-org/your-repo.git || (cd your-repo && git pull)"
+            ]}'
+
   automated-checks:
     name: Automated Checks
     runs-on: ubuntu-latest
@@ -90,3 +105,18 @@ jobs:
           terraform -chdir=terraform apply \
             -auto-approve \
             -var-file="envs/prod.tfvars"
+
+      - name: Get instance ID
+        id: tf_output
+        run: |
+          INSTANCE_ID=$(terraform -chdir=terraform output -raw instance_id)
+          echo "instance_id=$INSTANCE_ID" >> $GITHUB_OUTPUT
+
+      - name: Sync code to EC2
+        run: |
+          aws ssm send-command \
+            --instance-ids ${{ steps.tf_output.outputs.instance_id }} \
+            --document-name "AWS-RunShellScript" \
+            --parameters '{"commands":[
+              "cd /home/admin && git clone https://github.com/your-org/your-repo.git || (cd your-repo && git pull)"
+            ]}'

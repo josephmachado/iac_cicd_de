@@ -4,6 +4,10 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 5.92"
     }
+    local = {
+      source  = "hashicorp/local"
+      version = "~> 2.0"
+    }
   }
 
   required_version = ">= 1.2"
@@ -89,6 +93,11 @@ resource "aws_iam_role_policy" "s3_access" {
   })
 }
 
+resource "aws_iam_role_policy_attachment" "ssm" {
+  role       = aws_iam_role.ec2.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
 resource "aws_iam_instance_profile" "ec2" {
   name = "ec2-s3-profile-${var.environment}"
   role = aws_iam_role.ec2.name
@@ -106,7 +115,7 @@ resource "aws_instance" "this" {
   user_data = <<-EOF
     #!/bin/bash
     apt-get update -y
-    apt-get install -y python3 python3-pip
+    apt-get install -y python3 python3-pip git
     pip3 install boto3
   EOF
 
@@ -114,4 +123,20 @@ resource "aws_instance" "this" {
     Name        = "ec2-${var.environment}"
     Environment = var.environment
   }
+}
+
+# ----------------------------------------
+# Outputs
+# ----------------------------------------
+
+output "instance_id" {
+  value = aws_instance.this.id
+}
+
+resource "local_file" "outputs" {
+  filename = "${path.module}/outputs.txt"
+  content  = <<-EOF
+    instance_id  = ${aws_instance.this.id}
+    aws_role_arn = ${aws_iam_role.github_actions.arn}
+  EOF
 }

@@ -51,3 +51,18 @@ jobs:
             -auto-approve \
             -var-file="envs/sandbox.tfvars" \
             -var="environment=sandbox-${{ github.actor }}"
+
+      - name: Get instance ID
+        id: tf_output
+        run: |
+          INSTANCE_ID=$(terraform -chdir=terraform output -raw instance_id)
+          echo "instance_id=$INSTANCE_ID" >> $GITHUB_OUTPUT
+
+      - name: Sync code to EC2
+        run: |
+          aws ssm send-command \
+            --instance-ids ${{ steps.tf_output.outputs.instance_id }} \
+            --document-name "AWS-RunShellScript" \
+            --parameters '{"commands":[
+              "cd /home/admin && git clone https://github.com/your-org/your-repo.git || (cd your-repo && git pull)"
+            ]}'
