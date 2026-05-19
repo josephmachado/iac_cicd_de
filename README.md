@@ -83,6 +83,6 @@ AWS_ROLE_ARN = arn:aws:iam::<your-account-id>:role/github-actions
 
 
 
-
+get the local file aws_role_arn and ^
 
 

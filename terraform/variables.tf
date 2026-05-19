@@ -10,7 +10,7 @@ variable "environment" {
 }
 
 variable "input_bucket" {
-  type = string
+  type    = string
   default = "input-bucket"
 }
 
