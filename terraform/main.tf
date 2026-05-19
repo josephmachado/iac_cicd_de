@@ -31,6 +31,7 @@ provider "aws" {
 resource "aws_s3_bucket" "input_bucket" {
   bucket        = var.input_bucket
   force_destroy = true
+  count         = contains(["dev", "prod"], var.environment) ? 1 : 0
 
   tags = {
     Environment = var.environment
