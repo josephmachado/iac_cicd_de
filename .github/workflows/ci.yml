@@ -60,7 +60,7 @@ jobs:
 
       - name: Wait for EC2 to be ready
         run: |
-          aws ec2 wait instance-status-ok \
+          aws ec2 wait instance-running \
             --instance-ids ${{ steps.tf_output.outputs.instance_id }}
 
       - name: Sync code to EC2
