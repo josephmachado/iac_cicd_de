@@ -29,7 +29,7 @@ provider "aws" {
 # ----------------------------------------
 
 resource "aws_s3_bucket" "input_bucket" {
-  bucket = var.input_bucket
+  bucket        = var.input_bucket
   force_destroy = true
 
   tags = {
