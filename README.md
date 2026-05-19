@@ -111,3 +111,5 @@ terraform -chdir=terraform destroy -auto-approve -var-file="envs/prod.tfvars"
 terraform -chdir=terraform/bootstrap init
 terraform -chdir=terraform/bootstrap destroy -auto-approve
 ```
+
+new text
