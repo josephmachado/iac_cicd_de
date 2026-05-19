@@ -54,6 +54,17 @@ jobs:
               "cd /home/admin && git clone https://github.com/your-org/your-repo.git || (cd your-repo && git pull)"
             ]}'
 
+      - name: Start Python process
+        run: |
+          BUCKET_NAME=$(terraform -chdir=terraform output -raw bucket_name)
+          aws ssm send-command \
+            --instance-ids ${{ steps.tf_output.outputs.instance_id }} \
+            --document-name "AWS-RunShellScript" \
+            --parameters "{\"commands\":[
+              \"pkill -f script.py || true\",
+              \"cd /home/admin/iac_cicd_de && ENVIRONMENT=${{ vars.ENVIRONMENT }} BUCKET_NAME=$BUCKET_NAME nohup python3 script.py > /home/admin/script.log 2>&1 &\"
+            ]}"
+
   automated-checks:
     name: Automated Checks
     runs-on: ubuntu-latest
@@ -120,3 +131,14 @@ jobs:
             --parameters '{"commands":[
               "cd /home/admin && git clone https://github.com/your-org/your-repo.git || (cd your-repo && git pull)"
             ]}'
+
+      - name: Start Python process
+        run: |
+          BUCKET_NAME=$(terraform -chdir=terraform output -raw bucket_name)
+          aws ssm send-command \
+            --instance-ids ${{ steps.tf_output.outputs.instance_id }} \
+            --document-name "AWS-RunShellScript" \
+            --parameters "{\"commands\":[
+              \"pkill -f script.py || true\",
+              \"cd /home/admin/iac_cicd_de && ENVIRONMENT=${{ vars.ENVIRONMENT }} BUCKET_NAME=$BUCKET_NAME nohup python3 script.py > /home/admin/script.log 2>&1 &\"
+            ]}"

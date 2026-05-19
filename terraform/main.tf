@@ -133,10 +133,14 @@ output "instance_id" {
   value = aws_instance.this.id
 }
 
+output "bucket_name" {
+  value = aws_s3_bucket.input_bucket.bucket
+}
+
 resource "local_file" "outputs" {
   filename = "${path.module}/outputs.txt"
   content  = <<-EOF
     instance_id  = ${aws_instance.this.id}
-    aws_role_arn = ${aws_iam_role.github_actions.arn}
+    bucket_name  = ${aws_s3_bucket.input_bucket.bucket}
   EOF
 }
