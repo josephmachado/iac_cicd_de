@@ -37,6 +37,5 @@ jobs:
         run: |
           terraform -chdir=terraform destroy \
             -auto-approve \
-            -var="ci=true" \
             -var-file="envs/sandbox.tfvars" \
             -var="environment=sandbox-${{ github.actor }}"

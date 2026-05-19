@@ -49,6 +49,5 @@ jobs:
         run: |
           terraform -chdir=terraform apply \
             -auto-approve \
-            -var="ci=true" \
             -var-file="envs/sandbox.tfvars" \
             -var="environment=sandbox-${{ github.actor }}"
