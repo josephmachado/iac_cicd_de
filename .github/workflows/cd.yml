@@ -1,0 +1,92 @@
+name: Terraform CD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy-dev:
+    name: Deploy Dev
+    runs-on: ubuntu-latest
+    environment: dev
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        run: |
+          terraform -chdir=terraform init \
+            -backend-config="key=dev/terraform.tfstate"
+
+      - name: Terraform Apply
+        run: |
+          terraform -chdir=terraform apply \
+            -auto-approve \
+            -var-file="terraform/envs/dev.tfvars"
+
+  automated-checks:
+    name: Automated Checks
+    runs-on: ubuntu-latest
+    needs: deploy-dev
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Lint
+        run: echo "lint checks — replace with real linter later"
+
+      - name: Unit Tests
+        run: echo "unit tests — replace with pytest or similar later"
+
+      - name: Integration Tests
+        run: echo "integration tests — replace with real tests later"
+
+  deploy-prod:
+    name: Deploy Prod
+    runs-on: ubuntu-latest
+    needs: automated-checks
+    environment: prod
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        run: |
+          terraform -chdir=terraform init \
+            -backend-config="key=prod/terraform.tfstate"
+
+      - name: Terraform Apply
+        run: |
+          terraform -chdir=terraform apply \
+            -auto-approve \
+            -var-file="terraform/envs/prod.tfvars"
