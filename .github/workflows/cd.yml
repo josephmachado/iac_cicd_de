@@ -51,7 +51,7 @@ jobs:
             --instance-ids ${{ steps.tf_output.outputs.instance_id }} \
             --document-name "AWS-RunShellScript" \
             --parameters '{"commands":[
-              "cd /home/admin && git clone https://github.com/your-org/your-repo.git || (cd your-repo && git pull)"
+              "cd /home/admin && git clone https://github.com/josephmachado/iac_cicd_de.git || (cd iac_cicd_de && git pull)"
             ]}'
 
       - name: Start Python process
@@ -129,7 +129,7 @@ jobs:
             --instance-ids ${{ steps.tf_output.outputs.instance_id }} \
             --document-name "AWS-RunShellScript" \
             --parameters '{"commands":[
-              "cd /home/admin && git clone https://github.com/your-org/your-repo.git || (cd your-repo && git pull)"
+              "cd /home/admin && git clone https://github.com/josephmachado/iac_cicd_de.git || (cd iac_cicd_de && git pull)"
             ]}'
 
       - name: Start Python process
