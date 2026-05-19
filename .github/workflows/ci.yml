@@ -100,5 +100,5 @@ jobs:
             --document-name "AWS-RunShellScript" \
             --parameters "{\"commands\":[
               \"pkill -f src/main.py || true\",
-              \"cd /home/admin/iac_cicd_de && ENVIRONMENT=${{ vars.ENVIRONMENT }} BUCKET_NAME=$BUCKET_NAME nohup python3 src/main.py > /home/admin/script.log 2>&1 &\"
+              \"cd /home/admin/iac_cicd_de && ENVIRONMENT=${{ vars.environment }} BUCKET_NAME=$BUCKET_NAME nohup python3 src/main.py > /home/admin/script.log 2>&1 &\"
             ]}"

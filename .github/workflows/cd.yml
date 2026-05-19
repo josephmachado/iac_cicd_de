@@ -50,6 +50,26 @@ jobs:
           aws ec2 wait instance-running \
             --instance-ids ${{ steps.tf_output.outputs.instance_id }}
 
+      - name: Wait for SSM to be ready
+        run: |
+          INSTANCE_ID=${{ steps.tf_output.outputs.instance_id }}
+          aws ec2 wait instance-status-ok --instance-ids $INSTANCE_ID
+          echo "waiting for SSM agent..."
+          for i in {1..20}; do
+            STATUS=$(aws ssm describe-instance-information \
+              --filters "Key=InstanceIds,Values=$INSTANCE_ID" \
+              --query "InstanceInformationList[0].PingStatus" \
+              --output text)
+            echo "SSM status: $STATUS"
+            if [ "$STATUS" = "Online" ]; then
+              echo "SSM agent is ready"
+              exit 0
+            fi
+            sleep 15
+          done
+          echo "SSM agent did not come online in time"
+          exit 1
+
       - name: Sync code to EC2
         run: |
           aws ssm send-command \
@@ -67,7 +87,7 @@ jobs:
             --document-name "AWS-RunShellScript" \
             --parameters "{\"commands\":[
               \"pkill -f src/main.py || true\",
-              \"cd /home/admin/iac_cicd_de && ENVIRONMENT=${{ vars.ENVIRONMENT }} BUCKET_NAME=$BUCKET_NAME nohup python3 src/main.py > /home/admin/script.log 2>&1 &\"
+              \"cd /home/admin/iac_cicd_de && ENVIRONMENT=${{ vars.environment }} BUCKET_NAME=$BUCKET_NAME nohup python3 src/main.py > /home/admin/script.log 2>&1 &\"
             ]}"
 
   automated-checks:
@@ -133,6 +153,26 @@ jobs:
           aws ec2 wait instance-running \
             --instance-ids ${{ steps.tf_output.outputs.instance_id }}
 
+      - name: Wait for SSM to be ready
+        run: |
+          INSTANCE_ID=${{ steps.tf_output.outputs.instance_id }}
+          aws ec2 wait instance-status-ok --instance-ids $INSTANCE_ID
+          echo "waiting for SSM agent..."
+          for i in {1..20}; do
+            STATUS=$(aws ssm describe-instance-information \
+              --filters "Key=InstanceIds,Values=$INSTANCE_ID" \
+              --query "InstanceInformationList[0].PingStatus" \
+              --output text)
+            echo "SSM status: $STATUS"
+            if [ "$STATUS" = "Online" ]; then
+              echo "SSM agent is ready"
+              exit 0
+            fi
+            sleep 15
+          done
+          echo "SSM agent did not come online in time"
+          exit 1
+
       - name: Sync code to EC2
         run: |
           aws ssm send-command \
@@ -150,5 +190,5 @@ jobs:
             --document-name "AWS-RunShellScript" \
             --parameters "{\"commands\":[
               \"pkill -f src/main.py || true\",
-              \"cd /home/admin/iac_cicd_de && ENVIRONMENT=${{ vars.ENVIRONMENT }} BUCKET_NAME=$BUCKET_NAME nohup python3 src/main.py > /home/admin/script.log 2>&1 &\"
+              \"cd /home/admin/iac_cicd_de && ENVIRONMENT=${{ vars.environment }} BUCKET_NAME=$BUCKET_NAME nohup python3 src/main.py > /home/admin/script.log 2>&1 &\"
             ]}"

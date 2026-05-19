@@ -123,7 +123,7 @@ resource "aws_instance" "this" {
     systemctl enable amazon-ssm-agent
     systemctl start amazon-ssm-agent
 
-    pip3 install boto3
+    pip3 install boto3 --break-system-packages
   EOF
 
   tags = {
